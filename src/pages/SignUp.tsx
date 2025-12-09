@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import {type FormEvent, useState} from "react";
 import {useNavigate} from "react-router";
+import {useForm} from "react-hook-form";
 
 export const Wrapper = styled.div`
     width: 100vw;
@@ -72,55 +72,21 @@ const Button = styled.button`
         background-color: #574bd6;
     }
 `;
-
-type ErrorType = {
-    [key: string]: string;
+type FormValues = {
+    username: string;
+    password: string;
+    name: string;
+    email: string;
 }
 
 function SignUp() {
     const navigate = useNavigate();
 
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
+    const {register, handleSubmit, formState: {errors}} = useForm<FormValues>();
 
 
-    const [errors, setErrors] = useState<ErrorType>({});
+    const onSubmit = (data:FormValues) => {
 
-    const validate = () => {
-        const newErrors: ErrorType = {};
-        if (!username) {
-            newErrors.username = "아이디를 입력해주세요."
-        }
-        if (!password) {
-            newErrors.password = "비밀번호를 입력해주세요"
-        } else if (password.length < 6) {
-            newErrors.password = "비밀번호는 최소 6자 이상이어야 합니다. ";
-        }
-        if (!name) {
-            newErrors.name = "이름을 입력해주세요";
-        }
-        if (!email) {
-            newErrors.email = "이메일을 입력해주세요.";
-        } else if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) {
-            newErrors.email = "올바른 이메일 형식이 아닙니다. "
-        }
-
-        setErrors(newErrors);  //false가 뜨면 조건에 안맞아 fail=false가 뜸, pass하면 true
-        return Object.keys(newErrors).length === 0;
-    }
-    const onSubmit = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        if(!validate()) return;
-
-        // /result 이동을 시킴
-        // queryString을 통해 지금 준비된 state의 값을 전달해줘야 함
-        // navigate(`/result?username=${username}&password=${password}&name=${name}&email=${email}`);
-
-        // 전달해야 하는 데이터가 담긴 객체를 준비
-        const data = {username, password, name, email};
-        // new URLSearchParams(data) 를 통해 객체를 쿼리스트링으로 변환 후, string으로 변환
         const queryString = new URLSearchParams(data).toString();
         navigate(`/result?${queryString}`);
     };
@@ -130,29 +96,47 @@ function SignUp() {
             <Card>
                 <Title>회원가입</Title>
 
-                <Form onSubmit={onSubmit}>
+                <Form onSubmit={handleSubmit(onSubmit)}>
                     <InputGroup>
                         <Input placeholder={"아이디"}
-                               onChange={e => setUsername(e.target.value)}/>
-                        {errors.username && <ErrorText>{errors.username}</ErrorText>}
+                               {...register("username",{
+                                   required:"아이디를 입력해주세요"
+                               })} />
+                        {errors.username &&
+                            <ErrorText>{errors.username}</ErrorText>}
                     </InputGroup>
                     <InputGroup>
                         <Input
                             type={"password"}
                             placeholder={"비밀번호"}
-                            onChange={e => setPassword(e.target.value)}
+                            {...register("password", {
+                                required:"비밀번호를 입력해주세요",
+                                minLength:{
+                                    value:6,
+                                    message:"비밀번호는 최소 6자 이상이어야 합니다. "
+                                }
+                            })}
                         />
-                        {errors.password && <ErrorText>{errors.password}</ErrorText>}
+                        {errors.password &&
+                            <ErrorText>{errors.password.message}</ErrorText>}
                     </InputGroup>
                     <InputGroup>
                         <Input placeholder={"이름"}
-                               onChange={e => setName(e.target.value)}/>
+                               {...register("name",{
+                                   required: "이름을 입력해주세요"
+                               })}/>
                         {errors.name && <ErrorText>{errors.name}</ErrorText>}
                     </InputGroup>
                     <InputGroup>
                         <Input placeholder={"이메일"}
-                               onChange={e => setEmail(e.target.value)}/>
-                        {errors.email && <ErrorText>{errors.email}</ErrorText>}
+                               {...register("email", {
+                                   required:"이메일을 입력해주세요",
+                                   pattern:{
+                                       value:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/,
+                                       message:"올바른 이메일 형식이 아닙니다. "
+                                   }
+                               })}/>
+                        {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
                     </InputGroup>
                     <Button>회원가입</Button>
                 </Form>
