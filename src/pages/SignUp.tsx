@@ -72,6 +72,7 @@ const Button = styled.button`
         background-color: #574bd6;
     }
 `;
+
 type FormValues = {
     username: string;
     password: string;
@@ -82,11 +83,13 @@ type FormValues = {
 function SignUp() {
     const navigate = useNavigate();
 
-    const {register, handleSubmit, formState: {errors}} = useForm<FormValues>();
+    const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
 
-
-    const onSubmit = (data:FormValues) => {
-
+    const onSubmit = (data: FormValues) => {
+        // /result 이동을 시킴
+        // queryString을 통해 지금 준비된 state의 값을 전달해줘야 함
+        // navigate(`/result?username=${username}&password=${password}&name=${name}&email=${email}`);
+        // new URLSearchParams(data) 를 통해 객체를 쿼리스트링으로 변환 후, string으로 변환
         const queryString = new URLSearchParams(data).toString();
         navigate(`/result?${queryString}`);
     };
@@ -98,44 +101,48 @@ function SignUp() {
 
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <InputGroup>
-                        <Input placeholder={"아이디"}
-                               {...register("username",{
-                                   required:"아이디를 입력해주세요"
-                               })} />
-                        {errors.username &&
-                            <ErrorText>{errors.username}</ErrorText>}
+                        <Input
+                            {...register("username", {
+                                required: "아이디를 입력해주세요."
+                            })}
+                            placeholder={"아이디"}
+                        />
+                        {errors.username && <ErrorText>{errors.username.message}</ErrorText>}
                     </InputGroup>
                     <InputGroup>
                         <Input
                             type={"password"}
                             placeholder={"비밀번호"}
                             {...register("password", {
-                                required:"비밀번호를 입력해주세요",
-                                minLength:{
-                                    value:6,
-                                    message:"비밀번호는 최소 6자 이상이어야 합니다. "
+                                required: "비밀번호를 입력해주세요.",
+                                minLength: {
+                                    value: 6,
+                                    message: "비밀번호는 최소 6자 이상이어야 합니다."
                                 }
                             })}
                         />
-                        {errors.password &&
-                            <ErrorText>{errors.password.message}</ErrorText>}
+                        {errors.password && <ErrorText>{errors.password.message}</ErrorText>}
                     </InputGroup>
                     <InputGroup>
-                        <Input placeholder={"이름"}
-                               {...register("name",{
-                                   required: "이름을 입력해주세요"
-                               })}/>
-                        {errors.name && <ErrorText>{errors.name}</ErrorText>}
+                        <Input
+                            {...register("name", {
+                                required: "이름을 입력해주세요."
+                            })}
+                            placeholder={"이름"}
+                        />
+                        {errors.name && <ErrorText>{errors.name.message}</ErrorText>}
                     </InputGroup>
                     <InputGroup>
-                        <Input placeholder={"이메일"}
-                               {...register("email", {
-                                   required:"이메일을 입력해주세요",
-                                   pattern:{
-                                       value:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/,
-                                       message:"올바른 이메일 형식이 아닙니다. "
-                                   }
-                               })}/>
+                        <Input
+                            {...register("email", {
+                                required: "이메일을 입력해주세요.",
+                                pattern: {
+                                    value: /^\S+@\S+\.\S+$/,
+                                    message: "올바른 이메일 형식이 아닙니다."
+                                }
+                            })}
+                            type={"email"}
+                            placeholder={"이메일"} />
                         {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
                     </InputGroup>
                     <Button>회원가입</Button>
