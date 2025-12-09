@@ -1,5 +1,5 @@
-import { useSearchParams } from "react-router";
-import { Card, Title, Wrapper } from "./SignUp.tsx";
+import {useSearchParams} from "react-router";
+import {Card, Wrapper} from "./SignUp.tsx";
 import styled from "styled-components";
 
 const SectionTitle = styled.h2`
@@ -36,7 +36,7 @@ function SignUpResult() {
     return (
         <Wrapper>
             <Card>
-                <Title>회원가입 결과</Title>
+                <h2>회원가입 결과</h2>
 
                 <section>
                     <SectionTitle>queryString 결과</SectionTitle>
