@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import {type FormEvent, useState} from "react";
+import {useNavigate} from "react-router";
 
 const Wrapper = styled.div`
     width: 100vw;
@@ -66,25 +68,43 @@ const Button = styled.button`
 `
 
 function SignUp() {
+    const navigate = useNavigate();
+
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+
+    const onSubmit = (e:FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        // navigate(`/result?username=${username}&password=${password......email}`) 이렇게 써야할 거를 아래와 같이
+        // 정리해서 보낼 수 있게된다는 거
+
+        const data = { username, password, name, email };
+        const queryString = new URLSearchParams(data).toString();
+        navigate(`/result?${queryString}`);
+
+    }
     return (
         <Wrapper>
             <Card>
                 <Title>회원가입</Title>
-                <Form>
+                <Form onSubmit={onSubmit}>
                     <InputGroup>
-                        <Input placeholder={"아이디"}/>
+                        <Input placeholder={"아이디"} onChange={(e) => setUsername(e.target.value)} />
                         <ErrorText>에러메시지</ErrorText>
                     </InputGroup>
                     <InputGroup>
-                        <Input type={"password"} placeholder={"비밀번호"}/>
+                        <Input type={"password"} placeholder={"비밀번호"} onChange={(e) => setPassword(e.target.value)} />
                         <ErrorText>에러메시지</ErrorText>
                     </InputGroup>
                     <InputGroup>
-                        <Input placeholder={"이름"}/>
+                        <Input placeholder={"이름"} onChange={(e) => setName(e.target.value)} />
                         <ErrorText>에러메시지</ErrorText>
                     </InputGroup>
                     <InputGroup>
-                        <Input placeholder={"이메일"}/>
+                        <Input placeholder={"이메일"} onChange={(e) => setEmail(e.target.value)}/>
                         <ErrorText>에러메시지</ErrorText>
                     </InputGroup>
                     <Button>회원가입</Button>
